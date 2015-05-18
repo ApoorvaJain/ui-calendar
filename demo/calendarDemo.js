@@ -1,6 +1,7 @@
 /**
  * calendarDemoApp - 0.9.0
  */
+
 var calendarDemoApp = angular.module('calendarDemoApp', ['ui.calendar', 'ui.bootstrap']);
 
 function CalendarCtrl($scope,$compile,uiCalendarConfig) {
@@ -8,7 +9,9 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-    
+    $scope.eventName = "";
+    $scope.eventAgenda = "";
+
     /* event source that pulls from google.com */
     $scope.eventSource = {
             url: "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic",
@@ -110,6 +113,11 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
         
     };
 
+    $scope.addNewEventModal = function(){
+      alert($scope.eventName + " " + $scope.eventAgenda);
+      $scope.toggleModal();
+    }
+
     /* config object */
     $scope.uiConfig = {
       calendar:{
@@ -156,10 +164,10 @@ calendarDemoApp.directive('modal', function () {
 
         scope.$watch(attrs.visible, function(value){
           if(value){
-            jQuery(element).modal("show");
+            $(element).modal("show");
           }
           else{
-            jQuery(element).modal();
+            $(element).modal("hide");
             
           }
         });
