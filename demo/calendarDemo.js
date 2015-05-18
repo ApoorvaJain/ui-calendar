@@ -1,7 +1,7 @@
 /**
  * calendarDemoApp - 0.9.0
  */
-angular.module('calendarDemoApp', ['ui.calendar', 'ui.bootstrap']);
+var calendarDemoApp = angular.module('calendarDemoApp', ['ui.calendar', 'ui.bootstrap']);
 
 function CalendarCtrl($scope,$compile,uiCalendarConfig) {
     var date = new Date();
@@ -18,13 +18,13 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
 
     /* event source that contains custom events on the scope */
     $scope.events = [
-      {title: 'All Day Event',start: new Date(y, m, 1)},
-      {title: 'Long Event',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
-      {id: 999,title: 'Repeating Event',start: new Date(y, m, d - 3, 16, 0),allDay: false},
-      {id: 999,title: 'Repeating Event',start: new Date(y, m, d + 4, 16, 0),allDay: false},
-      {title: 'Birthday Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false},
-      {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
+      {title: 'Meeting-1',start: new Date(y, m, 1)},
+      {title: 'Meeting-2',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
+      {id: 999,title: 'Repeating Meeting-1',start: new Date(y, m, d - 3, 16, 0),allDay: false},
+      {id: 999,title: 'Conference-1',start: new Date(y, m, d + 4, 16, 0),allDay: false},
+      {title: 'Project Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false}
     ];
+    
     /* event source that calls a function on every view switch */
     $scope.eventsF = function (start, end, timezone, callback) {
       var s = new Date(start).getTime() / 1000;
@@ -43,6 +43,7 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
           {type:'party',title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
         ]
     };
+
     /* alert on eventClick */
     $scope.alertOnEventClick = function( date, jsEvent, view){
         $scope.alertMessage = (date.title + ' was clicked ');
@@ -68,6 +69,7 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
         sources.push(source);
       }
     };
+
     /* add custom event*/
     $scope.addEvent = function() {
       $scope.events.push({
@@ -98,13 +100,14 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
         $compile(element)($scope);
     };
 
+    $scope.showModal = false;
+    $scope.toggleModal = function(){
+        $scope.showModal = !$scope.showModal;
+    };
+
     $scope.dayClick = function( date, jsEvent, view){
-        $scope.alertMessage = (date + ' was clicked ');
-        alert('Clicked on: ' + date.format());
-
-        alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-
-        alert('Current view: ' + view.name);
+        $scope.toggleModal();
+        
     };
 
     /* config object */
@@ -112,7 +115,7 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
       calendar:{
         height: 450,
         editable: true,
-        theme:true,
+        theme:false,
         header:{
           left: 'title',
           center: '',
@@ -130,4 +133,49 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
     $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
     $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
 }
+
+calendarDemoApp.directive('modal', function () {
+    return {
+      template: '<div class="modal fade">' + 
+          '<div class="modal-dialog">' + 
+            '<div class="modal-content">' + 
+              '<div class="modal-header">' + 
+                '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' + 
+                '<h4 class="modal-title">{{ title }}</h4>' + 
+              '</div>' + 
+              '<div class="modal-body" ng-transclude></div>' + 
+            '</div>' + 
+          '</div>' + 
+        '</div>',
+      restrict: 'E',
+      transclude: true,
+      replace:true,
+      scope:true,
+      link: function postLink(scope, element, attrs) {
+        scope.title = attrs.title;
+
+        scope.$watch(attrs.visible, function(value){
+          if(value){
+            jQuery(element).modal("show");
+          }
+          else{
+            jQuery(element).modal();
+            
+          }
+        });
+
+        $(element).on('shown.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = true;
+          });
+        });
+
+        $(element).on('hidden.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = false;
+          });
+        });
+      }
+    };
+  });
 /* EOF */
