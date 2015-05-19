@@ -9,20 +9,13 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-    $scope.eventName = "";
-    $scope.eventAgenda = "";
 
-    /* event source that pulls from google.com */
-    $scope.eventSource = {
-            url: "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic",
-            className: 'gcal-event',           // an option!
-            currentTimezone: 'America/Chicago' // an option!
-    };
+    $scope.newEvent = {};
 
     /* event source that contains custom events on the scope */
     $scope.events = [
-      {title: 'Meeting-1',start: new Date(y, m, 1)},
-      {title: 'Meeting-2',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
+      {title: 'Meeting-1',start:new Date(y, m, d + 5),end:new Date(y, m, d + 7), eventAgenda: 'Meeting-1 Agenda blah blah', eventAttendees: 'ApoorvaJain;'},
+      {title: 'Meeting-2',start:new Date(y, m, d - 5),end:new Date(y, m, d - 3), eventAgenda: 'Meeting-1 Agenda blah blah', eventAttendees: 'ApoorvaJain;'},
       {id: 999,title: 'Repeating Meeting-1',start: new Date(y, m, d - 3, 16, 0),allDay: false},
       {id: 999,title: 'Conference-1',start: new Date(y, m, d + 4, 16, 0),allDay: false},
       {title: 'Project Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false}
@@ -75,13 +68,10 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
 
     /* add custom event*/
     $scope.addEvent = function() {
-      $scope.events.push({
-        title: 'Open Sesame',
-        start: new Date(y, m, 28),
-        end: new Date(y, m, 29),
-        className: ['openSesame']
-      });
+      alert($scope.newEvent.title);
+      $scope.events.push($scope.newEvent);
     };
+
     /* remove event */
     $scope.remove = function(index) {
       $scope.events.splice(index,1);
@@ -103,19 +93,30 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
         $compile(element)($scope);
     };
 
+
+    /**MODAL FUNCTIONS **/
     $scope.showModal = false;
     $scope.toggleModal = function(){
         $scope.showModal = !$scope.showModal;
     };
 
     $scope.dayClick = function( date, jsEvent, view){
-        $scope.toggleModal();
+      $scope.newEvent = {
+        title:"",
+        start: new Date(),
+        end: new Date(),
+        eventAgenda: "",
+        eventAttendees:""
+      };
+      $scope.newEvent.start = date.format();
+      $scope.newEvent.end = date.format();
+      $scope.toggleModal();
         
     };
 
     $scope.addNewEventModal = function(){
-      alert($scope.eventName + " " + $scope.eventAgenda);
       $scope.toggleModal();
+      $scope.addEvent();
     }
 
     /* config object */
@@ -129,6 +130,7 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
           center: '',
           right: 'today prev,next'
         },
+        defaultView: 'agendaDay',
         dayClick: $scope.dayClick,
         eventClick: $scope.alertOnEventClick,
         eventDrop: $scope.alertOnDrop,
@@ -138,8 +140,8 @@ function CalendarCtrl($scope,$compile,uiCalendarConfig) {
     };
 
     /* event sources array*/
-    $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
-    $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
+    $scope.eventSources = [$scope.events];
+    $scope.eventSources2 = [$scope.calEventsExt];
 }
 
 calendarDemoApp.directive('modal', function () {

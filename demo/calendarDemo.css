@@ -33,3 +33,28 @@ section {
 .calTools{
 	margin-bottom: 10px;
 }
+
+#directives-calendar .btn-toolbar{
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.icon-span{
+	margin-right: 10px;
+}
+
+.label-span{
+	margin-right: 40px;
+	vertical-align: center;
+	line-height: 10px;
+}
+
+.to-time{
+	float: left;
+	margin-top: -10px;
+}
+
+.till-time{
+	float: right;
+	margin-top: -10px;
+}
